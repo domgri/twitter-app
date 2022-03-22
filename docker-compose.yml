@@ -86,7 +86,7 @@ services:
       CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-7.0.1.jar
       CONNECT_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
       CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
-      CONNECT_PLUGIN_PATH: "/home/dev/projects/twitter-app/confl/connectors"
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components,/home/dev/projects/twitter-app/confl/connectors"
       CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
     volumes: 
 # might be problematic in future
