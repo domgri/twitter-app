@@ -91,7 +91,7 @@ services:
     volumes: 
 # might be problematic in future
 #      - '/home/domas/Desktop/tweet_finalised_01/confl/connectors:/home/domas/#Desktop/tweet_finalised_01/confl/connectors'
-	- /home/dev/projects/twitter-app/confl/connectors
+	- '/home/dev/projects/twitter-app/confl/connectors'
 
 
 #      - './confl/connectors'
