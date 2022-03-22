@@ -86,7 +86,7 @@ services:
       CLASSPATH: /usr/share/java/monitoring-interceptors/monitoring-interceptors-7.0.1.jar
       CONNECT_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
       CONNECT_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
-      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components,/home/dev/projects/twitter-app/confl/connectors"
+      CONNECT_PLUGIN_PATH: "/home/dev/projects/twitter-app/confl/connectors"
       CONNECT_LOG4J_LOGGERS: org.apache.zookeeper=ERROR,org.I0Itec.zkclient=ERROR,org.reflections=ERROR
     volumes: 
 # might be problematic in future
@@ -94,23 +94,7 @@ services:
        - '/home/dev/projects/twitter-app/confl/connectors:/home/dev/projects/twitter-app/confl/connectors'
 
 
-#      - './confl/connectors'
-      
-    command: 
-      - /bin/bash
-      - -c 
-      - |
-        # JDBC Drivers
-        # ------------
-        # MySQL
-        cp /home/dev/projects/twitter-app/confl/connectors/kafka-connect-jdbc-10.3.3.jar /usr/share/java/kafka-connect-jdbc/
-        cp /home/dev/projects/twitter-app/confl/connectors/mysql-connector-java-8.0.28 /usr/share/java/kafka-connect-jdbc/
-        cd /usr/share/java/kafka-connect-jdbc/
-        # See https://dev.mysql.com/downloads/connector/j/
-        curl https://cdn.mysql.com/Downloads/Connector-J/mysql-connector-java-8.0.28.tar.gz | tar xz 
-        # Now launch Kafka Connect
-        sleep infinity &
-        /etc/confluent/docker/run 
+#      - './confl/connectors'  
     networks:
      - backend
 
