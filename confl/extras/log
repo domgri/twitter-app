@@ -1,0 +1,163 @@
+LOG:
+
+
+----- Loop Begins -----
+Starting new tweets fetch for 300 seconds
+[1.] Starting: update NEW tweets ---
+Total number of tweets from NEW table: 0
+Ignoring the rest of operations
+[2.] Starting: store NEWest tweets ---
+1568 record(-s) stored in new_tweets.
+[3.] Starting: update TRENDING tweets ---
+Total number of tweets from TRENDING table: 0
+Ignoring the rest of operations
+Round: 1
+--- End of loop (sleep) ---
+----- Loop Begins -----
+Starting new tweets fetch for 300 seconds
+[1.] Starting: update NEW tweets ---
+Total number of tweets from NEW table: 900
+9 record(-s) stored in trending_tweets.
+900 record(-s) deleted from from new_tweets (did not meet trending threshold).
+[2.] Starting: store NEWest tweets ---
+768 record(-s) stored in new_tweets.
+[3.] Starting: update TRENDING tweets ---
+Total number of tweets from TRENDING table: 9
+9 record(-s) stored in trending_tweets.
+Round: 2
+--- End of loop (sleep) ---
+----- Loop Begins -----
+Starting new tweets fetch for 300 seconds
+[1.] Starting: update NEW tweets ---
+Total number of tweets from NEW table: 900
+7 record(-s) stored in trending_tweets.
+900 record(-s) deleted from from new_tweets (did not meet trending threshold).
+[2.] Starting: store NEWest tweets ---
+755 record(-s) stored in new_tweets.
+[3.] Starting: update TRENDING tweets ---
+Total number of tweets from TRENDING table: 16
+16 record(-s) stored in trending_tweets.
+Round: 3
+--- End of loop (sleep) ---
+----- Loop Begins -----
+Starting new tweets fetch for 300 seconds
+[1.] Starting: update NEW tweets ---
+Total number of tweets from NEW table: 900
+3 record(-s) stored in trending_tweets.
+900 record(-s) deleted from from new_tweets (did not meet trending threshold).
+[2.] Starting: store NEWest tweets ---
+471 record(-s) stored in new_tweets.
+[3.] Starting: update TRENDING tweets ---
+Total number of tweets from TRENDING table: 19
+19 record(-s) stored in trending_tweets.
+Round: 4
+--- End of loop (sleep) ---
+----- Loop Begins -----
+Starting new tweets fetch for 300 seconds
+[1.] Starting: update NEW tweets ---
+Total number of tweets from NEW table: 862
+3 record(-s) stored in trending_tweets.
+862 record(-s) deleted from from new_tweets (did not meet trending threshold).
+[2.] Starting: store NEWest tweets ---
+675 record(-s) stored in new_tweets.
+[3.] Starting: update TRENDING tweets ---
+Total number of tweets from TRENDING table: 22
+22 record(-s) stored in trending_tweets.
+Round: 5
+--- End of loop (sleep) ---
+----- Loop Begins -----
+Starting new tweets fetch for 300 seconds
+[1.] Starting: update NEW tweets ---
+Total number of tweets from NEW table: 675
+1 record(-s) stored in trending_tweets.
+675 record(-s) deleted from from new_tweets (did not meet trending threshold).
+[2.] Starting: store NEWest tweets ---
+525 record(-s) stored in new_tweets.
+[3.] Starting: update TRENDING tweets ---
+Total number of tweets from TRENDING table: 23
+23 record(-s) stored in trending_tweets.
+Round: 6
+--- End of loop (sleep) ---
+----- Loop Begins -----
+Starting new tweets fetch for 300 seconds
+[1.] Starting: update NEW tweets ---
+Total number of tweets from NEW table: 525
+1 record(-s) stored in trending_tweets.
+525 record(-s) deleted from from new_tweets (did not meet trending threshold).
+[2.] Starting: store NEWest tweets ---
+579 record(-s) stored in new_tweets.
+[3.] Starting: update TRENDING tweets ---
+Total number of tweets from TRENDING table: 24
+24 record(-s) stored in trending_tweets.
+Round: 7
+--- End of loop (sleep) ---
+----- Loop Begins -----
+Starting new tweets fetch for 300 seconds
+[1.] Starting: update NEW tweets ---
+Total number of tweets from NEW table: 579
+2 record(-s) stored in trending_tweets.
+579 record(-s) deleted from from new_tweets (did not meet trending threshold).
+[2.] Starting: store NEWest tweets ---
+613 record(-s) stored in new_tweets.
+[3.] Starting: update TRENDING tweets ---
+Total number of tweets from TRENDING table: 26
+26 record(-s) stored in trending_tweets.
+Round: 8
+--- End of loop (sleep) ---
+----- Loop Begins -----
+Starting new tweets fetch for 300 seconds
+[1.] Starting: update NEW tweets ---
+Total number of tweets from NEW table: 613
+^CTraceback (most recent call last):
+  File "driver_04.py", line 280, in <module>
+    asyncio.run(main())
+  File "/usr/lib/python3.8/asyncio/runners.py", line 44, in run
+    return loop.run_until_complete(main)
+  File "/usr/lib/python3.8/asyncio/base_events.py", line 603, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.8/asyncio/base_events.py", line 570, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.8/asyncio/base_events.py", line 1859, in _run_once
+    handle._run()
+  File "/usr/lib/python3.8/asyncio/events.py", line 81, in _run
+    self._context.run(self._callback, *self._args)
+  File "driver_04.py", line 265, in main
+    await updatingAllTweets(BATCHES_LIMIT, BATCH_SIZE)
+  File "driver_04.py", line 244, in updatingAllTweets
+    updateNewTweets(BATCHES_LIMIT, BATCH_SIZE)
+  File "driver_04.py", line 165, in updateNewTweets
+    ut = callApi(strBatches)
+  File "/home/domas/Desktop/tweet_finalised_01/confl/python/twitter_api_functions.py", line 18, in callApi
+    json_response = connect_to_endpoint(url)
+  File "/home/domas/Desktop/tweet_finalised_01/confl/python/twitter_api_functions.py", line 41, in connect_to_endpoint
+    response = requests.request("GET", url, auth=bearer_oauth)
+  File "/usr/lib/python3/dist-packages/requests/api.py", line 60, in request
+    return session.request(method=method, url=url, **kwargs)
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 533, in request
+    resp = self.send(prep, **send_kwargs)
+  File "/usr/lib/python3/dist-packages/requests/sessions.py", line 646, in send
+    r = adapter.send(request, **kwargs)
+  File "/usr/lib/python3/dist-packages/requests/adapters.py", line 439, in send
+    resp = conn.urlopen(
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 665, in urlopen
+    httplib_response = self._make_request(
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 421, in _make_request
+    six.raise_from(e, None)
+  File "<string>", line 3, in raise_from
+  File "/usr/lib/python3/dist-packages/urllib3/connectionpool.py", line 416, in _make_request
+    httplib_response = conn.getresponse()
+  File "/usr/lib/python3.8/http/client.py", line 1348, in getresponse
+    response.begin()
+  File "/usr/lib/python3.8/http/client.py", line 316, in begin
+    version, status, reason = self._read_status()
+  File "/usr/lib/python3.8/http/client.py", line 277, in _read_status
+    line = str(self.fp.readline(_MAXLINE + 1), "iso-8859-1")
+  File "/usr/lib/python3.8/socket.py", line 669, in readinto
+    return self._sock.recv_into(b)
+  File "/usr/lib/python3.8/ssl.py", line 1241, in recv_into
+    return self.read(nbytes, buffer)
+  File "/usr/lib/python3.8/ssl.py", line 1099, in read
+    return self._sslobj.read(len, buffer)
+KeyboardInterrupt
+
+domas@domas-GL502VSK:~/Desktop/tweet_finalised_01/confl/python$ 

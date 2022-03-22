@@ -1,0 +1,40 @@
+---
+version: '2'
+services: 
+  mysql:
+    # *-----------------------------*
+    # To connect to the DB: 
+    #   docker-compose exec mysql bash -c 'mysql -u root -p$MYSQL_ROOT_PASSWORD'
+    # *-----------------------------*
+    image: mysql
+    container_name: mysql
+    ports:
+      - 3306:3306
+    environment:
+     - MYSQL_ROOT_PASSWORD=Admin123
+     - MYSQL_USER=connect_user
+     - MYSQL_PASSWORD=asgard
+    volumes:
+     - ./confl/data/mysql:/docker-entrypoint-initdb.d/
+    networks:
+     - backend
+  python-scripts:
+    build:
+      dockerfile: Dockerfile
+      context: ./confl/python
+    depends_on:
+      - mysql
+    restart: on-failure:3 
+    volumes:
+      - ./confl/python:/confl/python
+    networks:
+     - backend
+networks:
+  backend:  
+ 
+# networks:  
+#https://stackoverflow.com/questions/50437919/node-js-with-mysql-docker-container-network-setup
+      
+      
+
+

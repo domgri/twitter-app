@@ -1,0 +1,13 @@
+{
+	"name": "mysql_source_connector_01",
+	"connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+	"connection.url": "jdbc:mysql://mysql:3306/tweets_with_counts",
+	"connection.user": "user_02",
+	"connection.password": "SecretPassw0rd1",
+	"topic.prefix": "mysql_01_",
+	"mode":"bulk",
+	"poll.interval.ms" : 10000,
+	"key.converter.schemas.enable" : "false",
+	"value.converter.schemas.enable" : "false",
+        "value.converter": "org.apache.kafka.connect.json.JsonConverter"
+}

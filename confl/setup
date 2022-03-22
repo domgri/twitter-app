@@ -1,0 +1,337 @@
+
+
+
+
+docker-compose up -d 
+(might need two times)
+
+---
+sudo find / -name kafka-connect-jdbc\*.jar
+place mysql jar there
+(e.g. sudo cp mysql-connector-java-8.0.28.jar /var/snap/docker/common/var-lib-docker/overlay2/a292471b4adf17ded2064859923f15cf1247ee211ed3707ac02060f1b3cc9f4f/diff/usr/share/java/kafka-connect-jdbc/
+)
+---
+better way to put both mysql and jdb connectors in same connectors folder (like twitter) and link it in docker-compose file
+
+restart connector:
+docker stop/start connect
+
+open confluent cli for metrics:
+http://localhost:9021
+
+
+
+
+
+
+
+
+Lucky setup:
+1. add twitter connector from file (in confl cli). 
+2. Add a new tweet (which will create a topic)
+
+2.
+docker exec -it ksqldb-server  ksql http://localhost:8088
+
+and add streams bellow:
+
+CREATE STREAM twitter_raw (CreatedAt bigint,Id VARCHAR, Text VARCHAR, SOURCE VARCHAR, Truncated VARCHAR, InReplyToStatusId VARCHAR, InReplyToUserId VARCHAR, InReplyToScreenName VARCHAR, GeoLocation VARCHAR, Place VARCHAR, Favorited VARCHAR, Retweeted VARCHAR, FavoriteCount VARCHAR, User VARCHAR, Retweet VARCHAR, Contributors VARCHAR, RetweetCount VARCHAR, RetweetedByMe VARCHAR, CurrentUserRetweetId VARCHAR, PossiblySensitive VARCHAR, Lang VARCHAR, WithheldInCountries VARCHAR, HashtagEntities VARCHAR, UserMentionEntities VARCHAR, MediaEntities VARCHAR, SymbolEntities VARCHAR, URLEntities VARCHAR) WITH (KAFKA_TOPIC='twitter_json_01',VALUE_FORMAT='JSON');
+
+CREATE STREAM tweet_id_and_counts_01 WITH (KAFKA_TOPIC='tweets_to_analyse_01') AS SELECT tw.Id as Id, tw.RetweetCount as RetweetCount, tw.FavoriteCount as FavoriteCount FROM TWITTER_RAW tw;
+
+
+
+
+docker network ls
+find host then  replace <dockerIP> in create user (after @) and run things below:
+
+
+docker-compose exec mysql bash -c 'mysql -u root -pAdmin123'
+
+
+---
+CREATE DATABASE tweets_with_counts;
+USE tweets_with_counts;
+DROP TABLE tweet_counts;
+CREATE TABLE tweet_counts ( 
+  id VARCHAR(255) PRIMARY KEY,
+  retweetCount INT,
+  favouriteCount INT
+);
+
+DROP TABLE trending_tweet_counts;
+CREATE TABLE trending_tweet_counts ( 
+  id VARCHAR(255) PRIMARY KEY,
+  retweetCount INT,
+  favouriteCount INT
+);
+
+---
+
+instead create :
+
+CREATE DATABASE tweets_with_counts;
+USE tweets_with_counts;
+DROP TABLE new_tweets;
+CREATE TABLE new_tweets ( 
+  id VARCHAR(255) PRIMARY KEY,
+  retweetCount INT,
+  favouriteCount INT,
+  timeStamp TIMESTAMP
+);
+
+DROP TABLE trending_tweets;
+CREATE TABLE trending_tweets( 
+  id VARCHAR(255) PRIMARY KEY,
+  retweetCount INT,
+  favouriteCount INT,
+  timeStamp TIMESTAMP
+);
+
+DROP TABLE top_tweets;
+CREATE TABLE top_tweets( 
+  id VARCHAR(255) PRIMARY KEY,
+  text VARCHAR(1000),
+  source VARCHAR(255),
+  userId VARCHAR(255),
+  userName VARCHAR(255),
+  userScreenName VARCHAR(255),
+  MiniProfileImageURL VARCHAR(1000),
+  PossiblySensitive VARCHAR(255),
+  Lang VARCHAR(255),
+  WithheldInCountries VARCHAR(255),
+  HashtagEntities VARCHAR(255),
+  retweetCount INT,
+  favouriteCount INT,
+  timeStamp TIMESTAMP
+);
+
+CreatedAt bigint,Id VARCHAR, Text VARCHAR, SOURCE VARCHAR, Truncated VARCHAR, User STRUCT<Id VARCHAR, Name VARCHAR, ScreenName VARCHAR, MiniProfileImageURL VARCHAR>, PossiblySensitive VARCHAR, Lang VARCHAR, WithheldInCountries VARCHAR, HashtagEntities VARCHAR
+
+
+run python code and figure out ip for user in errors.... (e.g. 172.18.0.1)
+
+
+
+----------------------------------
+CREATE USER 'user_01'@'localhost' IDENTIFIED BY 'SecretPassw0rd';
+GRANT ALL ON tweets_with_counts.tweet_counts TO 'user_01'@'localhost';
+FLUSH PRIVILEGES;
+
+docker-compose exec mysql bash -c 'mysql -u user_01 -pSecretPassw0rd'
+SELECT User, Host FROM mysql.user;
+
+Find out local ip by running code locally and checking error message (e.g. 172.18.0.1). Create user with it.
+
+---
+CREATE USER 'user_01'@'172.18.0.1' IDENTIFIED BY 'SecretPassw0rd1';
+GRANT ALL ON tweets_with_counts.tweet_counts TO 'user_01'@'172.18.0.1';
+GRANT ALL ON tweets_with_counts.trending_tweets_count TO 'user_01'@'172.18.0.1';
+FLUSH PRIVILEGES;
+---
+
+SELECT User, Host FROM mysql.user;
+
+CREATE USER 'user_01'@'172.18.0.6' IDENTIFIED BY 'SecretPassw0rd1';
+GRANT ALL ON tweets_with_counts.tweet_counts TO 'user_01'@'172.18.0.6';
+FLUSH PRIVILEGES;
+
+-------------------------------
+
+instead:
+
+CREATE USER 'user_01'@'172.18.0.1' IDENTIFIED BY 'SecretPassw0rd1';
+GRANT ALL ON tweets_with_counts.new_tweets TO 'user_01'@'172.18.0.1';
+GRANT ALL ON tweets_with_counts.trending_tweets TO 'user_01'@'172.18.0.1';
+FLUSH PRIVILEGES;
+
+CREATE USER 'user_02'@'172.18.0.6' IDENTIFIED BY 'SecretPassw0rd1';
+GRANT ALL ON tweets_with_counts.new_tweets TO 'user_02'@'172.18.0.6';
+GRANT ALL ON tweets_with_counts.trending_tweets TO 'user_02'@'172.18.0.6';
+FLUSH PRIVILEGES;
+
+++
+CREATE USER 'user_02' IDENTIFIED BY 'SecretPassw0rd1';
+GRANT ALL ON tweets_with_counts.new_tweets TO 'user_02';
+GRANT ALL ON tweets_with_counts.trending_tweets TO 'user_02';
+FLUSH PRIVILEGES;
+
+CREATE USER 'user_01'@'172.23.0.5' IDENTIFIED BY 'SecretPassw0rd1';
+GRANT ALL ON tweets_with_counts.new_tweets TO 'user_01'@'172.23.0.5';
+GRANT ALL ON tweets_with_counts.trending_tweets TO 'user_01'@'172.23.0.5';
+FLUSH PRIVILEGES;
+
+CREATE USER 'user_02'@'172.23.0.8' IDENTIFIED BY 'SecretPassw0rd1';
+GRANT ALL ON tweets_with_counts.new_tweets TO 'user_02'@'172.23.0.8';
+GRANT ALL ON tweets_with_counts.trending_tweets TO 'user_02'@'172.23.0.8';
+FLUSH PRIVILEGES;
+
+
+CREATE USER 'client_01' IDENTIFIED BY 'goodLuckBruteForcingTh1sB@byB0Y!';
+GRANT ALL ON tweets_with_counts.new_tweets TO 'client_01';
+GRANT ALL ON tweets_with_counts.trending_tweets TO 'client_01';
+FLUSH PRIVILEGES;
+
+drop user 'user_01'@'172.18.0.1';
+
+
+then run in terminal:
+(if not working, investigate by describe connector "jdbc_source_mysql_01";)
+
+curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d '{
+        "name": "jdbc_source_mysql_01",
+        "config": {
+                "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+                "connection.url": "jdbc:mysql://mysql:3306/tweets_with_counts",
+                "connection.user": "user_02",
+                "connection.password": "SecretPassw0rd1",
+                "topic.prefix": "top_01_",
+                "mode":"bulk",
+                "poll.interval.ms" : 10000,
+                "numeric.mapping":"best_fit"
+                }
+        }'
+        
+CREATE USER 'user_02'@'172.18.0.7' IDENTIFIED BY 'SecretPassw0rd2';
+# GRANT ALL ON tweets_with_counts.tweet_counts TO 'user_02'@'172.18.0.7';
+GRANT ALL ON tweets_with_counts.trending_tweet_counts TO 'user_02'@'172.18.0.7';
+FLUSH PRIVILEGES;
+        
+curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d '{
+        "name": "jdbc_source_mysql_02",
+        "config": {
+                "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+                "connection.url": "jdbc:mysql://mysql:3306/tweets_with_counts",
+                "connection.user": "user_02",
+                "connection.password": "SecretPassw0rd2",
+                "topic.prefix": "mysql_01_",
+                "mode":"bulk",
+                "poll.interval.ms" : 10000,
+                "numeric.mapping":"best_fit",
+                "key.converter.schemas.enable" : "false",
+		 "value.converter.schemas.enable" : "false",
+                "value.converter": "org.apache.kafka.connect.storage.StringConverter"
+                }
+        }'
+
+
+https://docs.docker.com/language/python/build-images/
+in python folder...
+docker build --tag python-docker .
+docker run python-docker 
+
+create connector from mysql to kafka
+(if user access denied - again find ip in logs (e.g 172.18.0.6)) and create user
+
+---
+CREATE STREAM TOP_TWEETS_MYSQL_01 (id VARCHAR, retweetCount INT, favouriteCount INT, timeStamp VARCHAR) WITH (KAFKA_TOPIC='mysql_01_trending_tweets', VALUE_FORMAT='JSON');
+---
+
+---
+CREATE STREAM top_tweets_01 AS
+  SELECT 
+	tw.Id as Id, 
+	tw.RetweetCount as RetweetCount, 
+	tw.FavoriteCount as FavoriteCount,
+  FROM TOP_TWEETS_MYSQL_01 tw
+    LEFT JOIN TWITTER_RAW ON tw.Id = TWITTER_RAW.Id
+  WHERE tw.RetweetCount > 1 OR tw.FavoriteCount > 1
+  EMIT CHANGES;
+---
+  
+  ---
+CREATE STREAM top_tweets_01 AS
+  SELECT 
+	tw.Id as Id, 
+	tw.RetweetCount as RetweetCount, 
+	tw.FavouriteCount as FavouriteCount,
+	tw.TimeStamp as TimeStamp,
+	tr.CreatedAt as CreatedAt,
+	tr.Text as text,
+	tr.Source as SourceSpec,
+	tr.Truncated as Truncated,
+	tr.User->Id as UserId,
+	tr.User->Name as UserName,
+	tr.User->ScreenName as UserScreenName,
+	tr.User->MiniProfileImageURL as UserMiniProfileImageURL,
+	tr.PossiblySensitive as PossiblySensitive,
+	tr.Lang as Lang,
+	tr.WithheldInCountries as WithheldInCountries,
+	tr.HashtagEntities as HashtagEntities
+  FROM TOP_TWEETS_MYSQL_01 tw
+  INNER JOIN TWITTER_TO_DISPLAY tr
+  WITHIN 1 DAYS
+    ON tw.Id = tr.Id
+    WHERE tw.RetweetCount >= 1000 OR tw.FavouriteCount >= 1000
+  EMIT CHANGES;
+  ---
+  
+  CREATE STREAM top_tweets_01 AS
+  SELECT 
+	tw.Id as Id, 
+	tr.CreatedAt as CreatedAt
+  FROM TOP_TWEETS_MYSQL_01 tw
+  INNER JOIN TWITTER_TO_DISPLAY tr
+  WITHIN 1 DAYS
+  ON tw.Id = tr.Id
+  EMIT CHANGES;
+  
+  
+CREATE STREAM TWITTER_TO_DISPLAY (CreatedAt bigint,Id VARCHAR, Text VARCHAR, SOURCE VARCHAR, Truncated VARCHAR, User STRUCT<Id VARCHAR, Name VARCHAR, ScreenName VARCHAR, MiniProfileImageURL VARCHAR>, PossiblySensitive VARCHAR, Lang VARCHAR, WithheldInCountries VARCHAR, HashtagEntities VARCHAR) WITH (KAFKA_TOPIC='twitter_json_01',VALUE_FORMAT='JSON');
+
+CREATE STREAM test_user_01 (User STRUCT<Id VARCHAR, Name VARCHAR>) WITH (KAFKA_TOPIC='twitter_json_01',VALUE_FORMAT='JSON');
+
+
+
+
+INSERT INTO trending_tweet_counts (id, retweetCount, favouriteCount) 
+      SELECT id, retweetCount, favouriteCount 
+      FROM tweet_counts 
+      WHERE retweetCount >= 1 OR favouriteCount >= 1; 
+
+      DELETE FROM tweet_counts 
+      WHERE retweetCount >= 1 OR favouriteCount >= 1; 
+
+start python files (if needed install necessary imports)
+
+
+edit retention for topics - to 1day
+
+
+
+
+
+SELECT ID, TOPKDISTINCT(FAVOURITECOUNT, 10) 
+  FROM TOP_TWEETS_MYSQL_01 WINDOW TUMBLING (SIZE 1 DAYS)
+  GROUP BY id
+  EMIT CHANGES;
+  
+SELECT ID, MAX(FAVOURITECOUNT)
+FROM TOP_TWEETS_MYSQL_01
+WINDOW TUMBLING (SIZE 1 DAYS)
+GROUP BY ID
+EMIT CHANGES;
+
+
+
+CREATE USER 'client_01'@'172.18.0.1' IDENTIFIED BY 'goodLuckBruteForcingTh1sB@byB0Y!';
+GRANT ALL ON tweets_with_counts.trending_tweets TO 'client_01'@'172.18.0.1';
+GRANT ALL ON tweets_with_counts.new_tweets TO 'user_01'@'172.18.0.1';
+FLUSH PRIVILEGES;
+
+
+check redis for cache
+
+https://www.docker.com/blog/containerized-python-development-part-1/
+python docker
+docker build -t python-scripts .
+docker run -d -p 5000:5000 python-scripts
+
+
+https://docs.docker.com/language/python/develop/
+might be workt to check for python and mysql
+
+
+python seems not to work on docker - cant find kafka topics;
+backend web probably is not reachable by front - check as well
+
