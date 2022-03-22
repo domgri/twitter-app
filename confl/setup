@@ -28,7 +28,35 @@ http://localhost:9021
 
 Lucky setup:
 1. add twitter connector from file (in confl cli). 
+
+curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d '{
+        "name": "twitter_source_connector_01",
+        "config": {
+                "connector.class": "com.github.jcustenborder.kafka.connect.twitter.TwitterSourceConnector",
+   "twitter.oauth.accessToken": "1496988532161798147-4S1J7xxCowL45d6TZmrOIwGUngxe3B",
+   "twitter.oauth.consumerSecret": "UfJTHVWe9Q4vNNHCW6pDvq1uIgp0AtxM3S4agElr1dxvwkkTSf",
+   "twitter.oauth.consumerKey": "jLManiXli9Tx6GeAgmAJWTOVQ",
+   "twitter.oauth.accessTokenSecret": "jLCLjeC9scongMRo8mVEApEvNZ5PuRRakKsUrflGZ9R1J",
+   "kafka.delete.topic": "twitter_deletes_json_01",
+   "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+   "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+   "value.converter.schemas.enable": false,
+   "key.converter.schemas.enable": false,
+   "kafka.status.topic": "twitter_json_01",
+   "process.deletes": true,
+   "filter.keywords": "LongTestWord_01",
+   "topic.creation.groups": "twitter_group_01",
+   "topic.creation.default.partitions": "1",
+   "topic.creation.default.replication.factor": "1"
+                }
+        }'
+
+
+
+
 2. Add a new tweet (which will create a topic)
+
+
 
 2.
 docker exec -it ksqldb-server  ksql http://localhost:8088
@@ -140,9 +168,9 @@ FLUSH PRIVILEGES;
 
 instead:
 
-CREATE USER 'user_01'@'172.18.0.1' IDENTIFIED BY 'SecretPassw0rd1';
-GRANT ALL ON tweets_with_counts.new_tweets TO 'user_01'@'172.18.0.1';
-GRANT ALL ON tweets_with_counts.trending_tweets TO 'user_01'@'172.18.0.1';
+CREATE USER 'user_01'@'172.18.0.10' IDENTIFIED BY 'SecretPassw0rd1';
+GRANT ALL ON tweets_with_counts.new_tweets TO 'user_01'@'172.18.0.10';
+GRANT ALL ON tweets_with_counts.trending_tweets TO 'user_01'@'172.18.0.10';
 FLUSH PRIVILEGES;
 
 CREATE USER 'user_02'@'172.18.0.6' IDENTIFIED BY 'SecretPassw0rd1';
