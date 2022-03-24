@@ -28,7 +28,7 @@ newBatches = deque()
 
 async def getNewTweets(consumer):
 
-    CONSUMING_WINDOW_SECONDS = 300
+    CONSUMING_WINDOW_SECONDS = 30
     timeout = time.time() + CONSUMING_WINDOW_SECONDS 
 
     print("Starting new tweets fetch for " + str(CONSUMING_WINDOW_SECONDS) + " seconds") 
@@ -79,7 +79,7 @@ def listToTweetCountObjectsList(passedMessages):
     result = []
     for message in passedMessages:
         result.append(TweetCounts(
-            message[0], message[1], message[2]
+            message[0], message[1], message[2], message[3]
         ))
 
     return result
