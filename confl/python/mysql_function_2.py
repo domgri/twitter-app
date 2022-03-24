@@ -55,7 +55,7 @@ def storeTweets(table, tweetsData, threshold):
 
   for entry in tweetsData:
     if entry.favouriteCount >= threshold:
-      sql = """INSERT INTO {table} (id, retweetCount, favouriteCount, createdAt) VALUES({id}, {retweets}, {favourites}, \"{createdAt}\") ON DUPLICATE KEY UPDATE 
+      sql = """INSERT INTO {table} (id, retweetCount, favouriteCount, createdAt) VALUES({id}, {retweets}, {favourites}, {createdAt}) ON DUPLICATE KEY UPDATE 
       retweetCount={retweets}, favouriteCount={favourites};""".format(table = table, id = entry.id, retweets = entry.retweetCount, favourites = entry.favouriteCount, createdAt = entry.createdAt)
       mycursor.execute(sql)
       count += 1
