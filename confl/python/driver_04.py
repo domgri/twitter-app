@@ -28,7 +28,6 @@ newBatches = deque()
 
 async def getNewTweets(consumer):
 
-    CONSUMING_WINDOW_SECONDS = 30
     timeout = time.time() + CONSUMING_WINDOW_SECONDS 
 
     print("Starting new tweets fetch for " + str(CONSUMING_WINDOW_SECONDS) + " seconds") 
