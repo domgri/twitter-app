@@ -21,23 +21,24 @@ TRENDING_TWEETS_TABLE = "trending_tweets"
 BATCHES_LIMIT = 9
 BATCH_SIZE = 100
 TRENDING_THRESHOLD = 10
+CONSUMING_WINDOW_SECONDS = 300
 
 messages = []
 newBatches = deque()
 
 async def getNewTweets(consumer):
 
-    timespan = 300
-    timeout = time.time() + timespan 
+    CONSUMING_WINDOW_SECONDS = 300
+    timeout = time.time() + CONSUMING_WINDOW_SECONDS 
 
-    print("Starting new tweets fetch for " + str(timespan) + " seconds") 
-    logging.warning("Starting new tweets fetch for " + str(timespan) + " seconds")  
+    print("Starting new tweets fetch for " + str(CONSUMING_WINDOW_SECONDS) + " seconds") 
+    logging.warning("Starting new tweets fetch for " + str(CONSUMING_WINDOW_SECONDS) + " seconds")  
 
     try:
        
         while time.time() < timeout:
              
-            records = consumer.consume(timeout=timespan, num_messages=MAX_NUMBER_OF_TWEETS_TO_CONSUME)
+            records = consumer.consume(timeout=CONSUMING_WINDOW_SECONDS, num_messages=MAX_NUMBER_OF_TWEETS_TO_CONSUME)
 
             if not records:
                 #print("Nothing to consume, sleeping (for " + str(timespan/10) +" seconds)")
@@ -68,7 +69,8 @@ def streamToTweetCountsObjectsList(passedData):
         result.append(TweetCounts(
             entry["ID"],
             entry["RETWEETCOUNT"],
-            entry["FAVORITECOUNT"]
+            entry["FAVORITECOUNT"],
+            entry["CREATEDAT"]
         ))
 
     return result

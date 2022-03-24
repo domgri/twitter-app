@@ -25,7 +25,7 @@ mydb = mysql.connector.connect(
 def getTweets(table, batchesNum, batchSize):
     global mydb
     mycursor = mydb.cursor()
-    mycursor.execute("SELECT id, retweetCount, favouriteCount FROM {table} LIMIT {number}".format(table = table, number = batchesNum * batchSize))
+    mycursor.execute("SELECT id, retweetCount, favouriteCount, createdAt FROM {table} LIMIT {number}".format(table = table, number = batchesNum * batchSize))
     myresult = mycursor.fetchall()
     return myresult
 
@@ -55,8 +55,8 @@ def storeTweets(table, tweetsData, threshold):
 
   for entry in tweetsData:
     if entry.favouriteCount >= threshold:
-      sql = """INSERT INTO {table} (id, retweetCount, favouriteCount, timeStamp) VALUES({id}, {retweets}, {favourites}, \"{timeStamp}\") ON DUPLICATE KEY UPDATE 
-      retweetCount={retweets}, favouriteCount={favourites};""".format(table = table, id = entry.id, retweets = entry.retweetCount, favourites = entry.favouriteCount, timeStamp = datetime.datetime.now())
+      sql = """INSERT INTO {table} (id, retweetCount, favouriteCount, createdAt) VALUES({id}, {retweets}, {favourites}, \"{createdAt}\") ON DUPLICATE KEY UPDATE 
+      retweetCount={retweets}, favouriteCount={favourites};""".format(table = table, id = entry.id, retweets = entry.retweetCount, favourites = entry.favouriteCount, createdAt = entry.createdAt)
       mycursor.execute(sql)
       count += 1
 
@@ -74,8 +74,8 @@ def storeNewestTweets(table, tweets):
   count = 0
 
   for entry in tweets:
-      sql = """INSERT INTO {table} (id, retweetCount, favouriteCount, timeStamp) VALUES({id}, {retweets}, {favourites}, \"{timeStamp}\") ON DUPLICATE KEY UPDATE 
-      retweetCount={retweets}, favouriteCount={favourites};""".format(table = table, id = entry.id, retweets = entry.retweetCount, favourites = entry.favouriteCount, timeStamp = datetime.datetime.now())
+      sql = """INSERT INTO {table} (id, retweetCount, favouriteCount, createdAt) VALUES({id}, {retweets}, {favourites}, \"{createdAt}\") ON DUPLICATE KEY UPDATE 
+      retweetCount={retweets}, favouriteCount={favourites};""".format(table = table, id = entry.id, retweets = entry.retweetCount, favourites = entry.favouriteCount, createdAt = entry.createdAt)
       mycursor.execute(sql)
       count += 1
 
